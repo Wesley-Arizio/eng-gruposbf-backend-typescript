@@ -3,16 +3,31 @@ import { Server } from "../../src/server";
 import { ConvertCurrencyUseCase } from "../../src/useCase/convertCurrencyUseCase";
 import express from "express";
 import { QuoteAdapter } from "../../src/adapter/quote";
+import { PgDatabase } from "../../src/database";
+import { CurrencyRepository } from "../../src/repository/currencyRepository";
+import config from "../../knexfile";
 describe("Server", () => {
   let connection: express.Express;
-  let quoteAdapter = new QuoteAdapter();
-  let converCurrencyUseCase = new ConvertCurrencyUseCase(quoteAdapter);
-  let server = new Server(converCurrencyUseCase);
+  let database: PgDatabase;
+  let repository: CurrencyRepository;
+  let quoteAdapter: QuoteAdapter;
+  let converCurrencyUseCase: ConvertCurrencyUseCase;
+  let server: Server;
   beforeEach(async function () {
+    quoteAdapter = new QuoteAdapter();
+    database = new PgDatabase(config.development);
+    await database.init();
+    repository = new CurrencyRepository(database);
+    converCurrencyUseCase = new ConvertCurrencyUseCase(
+      quoteAdapter,
+      repository
+    );
+    server = new Server(converCurrencyUseCase);
     connection = await server.init(4002);
   });
-  afterEach(function () {
+  afterEach(async function () {
     server.closeConnection();
+    await database.getConnection().destroy();
   });
   it("Should be able to call /api/convert to convert BRL to other currencies", async () => {
     jest.spyOn(quoteAdapter, "quote").mockImplementationOnce(() => {

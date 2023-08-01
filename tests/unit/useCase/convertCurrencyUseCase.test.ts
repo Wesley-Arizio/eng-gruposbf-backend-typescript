@@ -1,11 +1,24 @@
+import config from "../../../knexfile";
 import { QuoteAdapter } from "../../../src/adapter/quote";
+import { IDatabase, PgDatabase } from "../../../src/database";
+import { CurrencyRepository } from "../../../src/repository/currencyRepository";
 import { ConvertCurrencyUseCase } from "../../../src/useCase/convertCurrencyUseCase";
 
 describe("ConvertCurrencyUseCase", () => {
-  it("Should convert BRl amount to the required currencies", async () => {
-    const adapter = new QuoteAdapter();
-    const useCase = new ConvertCurrencyUseCase(adapter);
+  let adapter: QuoteAdapter;
+  let database: PgDatabase;
+  let repository: CurrencyRepository;
+  let useCase: ConvertCurrencyUseCase;
 
+  beforeEach(async () => {
+    adapter = new QuoteAdapter();
+    database = new PgDatabase(config.development);
+    await database.init();
+    repository = new CurrencyRepository(database);
+    useCase = new ConvertCurrencyUseCase(adapter, repository);
+  });
+
+  it("Should convert BRl amount to the required currencies", async () => {
     const mockedQuote = jest.spyOn(adapter, "quote");
 
     mockedQuote.mockImplementationOnce(() => {
@@ -38,9 +51,6 @@ describe("ConvertCurrencyUseCase", () => {
     expect(response).toStrictEqual(expected);
   });
   it("Should throw internal server error if anything goes wrong", async () => {
-    const adapter = new QuoteAdapter();
-    const useCase = new ConvertCurrencyUseCase(adapter);
-
     const mockedQuote = jest.spyOn(adapter, "quote");
 
     mockedQuote.mockImplementationOnce(() => {

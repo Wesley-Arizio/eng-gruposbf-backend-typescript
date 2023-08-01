@@ -125,4 +125,13 @@ describe("Quote", () => {
       "Error getting quote for currencies, see the logs"
     );
   });
+
+  it("Should throw error if currencies is empty", async () => {
+    const currencies: String[] = [];
+    const adapter = new QuoteAdapter();
+
+    await expect(adapter.quote(currencies)).rejects.toThrow(
+      "Should set at least on currency for convertion"
+    );
+  });
 });
