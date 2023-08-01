@@ -22,7 +22,6 @@ export class Server {
     try {
       const amount = req.params.amount;
       const response = await this.convertCurrencyUseCase.execute(amount);
-      console.log({ response });
       return res
         .status(200)
         .json(JSON.parse(JSON.stringify(Object.fromEntries(response))));
