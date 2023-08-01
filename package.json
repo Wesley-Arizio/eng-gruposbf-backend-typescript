@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --silent --detectOpenHandles",
     "start:dev": "npx nodemon"
   },
   "keywords": [],
@@ -14,8 +14,10 @@
     "@types/axios": "^0.14.0",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.3",
+    "@types/supertest": "^2.0.12",
     "jest": "^29.6.2",
     "nodemon": "^3.0.1",
+    "supertest": "^6.3.3",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
