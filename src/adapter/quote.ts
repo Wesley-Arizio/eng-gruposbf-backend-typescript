@@ -28,6 +28,8 @@ interface ApiResponse {
 
 export class QuoteAdapter implements IQuoteAdapter {
   async quote(currencies: String[]): Promise<Quote[]> {
+    if (currencies.length == 0)
+      throw new Error("Should set at least on currency for convertion");
     const api = axios.create({
       baseURL: "https://economia.awesomeapi.com.br",
     });
